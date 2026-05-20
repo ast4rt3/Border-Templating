@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Border Templating</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="workspace" aria-label="Template composer">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Border Templating</p>
+          <h1>Create framed campaign photos</h1>
+        </div>
+        <button class="primary-action" id="downloadBtn" type="button" disabled>Download PNG</button>
+      </header>
+
+      <div class="composer">
+        <aside class="controls" aria-label="Editor controls">
+          <label class="upload-card">
+            <span>Upload photo</span>
+            <input id="photoInput" type="file" accept="image/*">
+          </label>
+
+          <div class="field-group">
+            <label for="templateSelect">Border</label>
+            <select id="templateSelect">
+              <option value="">Add PNG files to assets/img/imgtemplate</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="zoomRange">Zoom</label>
+            <input id="zoomRange" type="range" min="0.5" max="3" step="0.01" value="1">
+          </div>
+
+          <div class="grid-fields">
+            <label>
+              X
+              <input id="xOffset" type="number" value="0" step="1">
+            </label>
+            <label>
+              Y
+              <input id="yOffset" type="number" value="0" step="1">
+            </label>
+          </div>
+
+          <div class="button-row">
+            <button id="fitBtn" type="button">Fit</button>
+            <button id="fillBtn" type="button">Fill</button>
+            <button id="centerBtn" type="button">Center</button>
+          </div>
+        </aside>
+
+        <section class="preview-panel" aria-label="Preview">
+          <canvas id="previewCanvas" width="1080" height="1080"></canvas>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
