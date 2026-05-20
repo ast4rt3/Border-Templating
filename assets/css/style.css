@@ -50,6 +50,28 @@ input[type="file"]::file-selector-button {
   padding: 28px;
 }
 
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 28px 24px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.site-footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--accent-dark);
+  text-decoration: underline;
+}
+
 .workspace {
   max-width: 1240px;
   margin: 0 auto;
@@ -400,6 +422,12 @@ canvas {
 @media (max-width: 520px) {
   .app-shell {
     padding: 12px;
+  }
+
+  .site-footer {
+    flex-direction: column;
+    gap: 6px;
+    padding: 4px 12px 18px;
   }
 
   .topbar {
