@@ -1,13 +1,13 @@
 const TEMPLATE_DIR = 'assets/img/imgtemplate/';
-const TEMPLATE_FILES = [
-  // Add your border PNG filenames here, for example:
-  // 'campaign-border.png',
-];
+const TEMPLATE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp'];
 
 const canvas = document.querySelector('#previewCanvas');
 const ctx = canvas.getContext('2d');
 const photoInput = document.querySelector('#photoInput');
 const templateSelect = document.querySelector('#templateSelect');
+const templatePreviewFrame = document.querySelector('.template-preview');
+const templatePreview = document.querySelector('#templatePreview');
+const templatePreviewText = document.querySelector('#templatePreviewText');
 const zoomRange = document.querySelector('#zoomRange');
 const xOffset = document.querySelector('#xOffset');
 const yOffset = document.querySelector('#yOffset');
@@ -33,18 +33,63 @@ function loadImage(src) {
   });
 }
 
-function populateTemplates() {
+function templateNameFromFile(file) {
+  const filename = file.split('/').pop();
+  const name = filename.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
+  return name.replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function normalizeTemplateFile(href) {
+  const url = new URL(href, window.location.href);
+  const filename = decodeURIComponent(url.pathname.split('/').pop());
+  return filename;
+}
+
+async function discoverTemplates() {
+  const response = await fetch(TEMPLATE_DIR);
+  if (!response.ok) return [];
+
+  const html = await response.text();
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const files = [...doc.querySelectorAll('a')]
+    .map((link) => normalizeTemplateFile(link.getAttribute('href')))
+    .filter((file) => TEMPLATE_EXTENSIONS.some((extension) => file.toLowerCase().endsWith(extension)));
+
+  return [...new Set(files)].sort((a, b) => a.localeCompare(b));
+}
+
+function populateTemplates(files) {
   templateSelect.innerHTML = '';
 
-  if (!TEMPLATE_FILES.length) {
-    templateSelect.append(new Option('Add filenames in assets/js/app.js', ''));
+  if (!files.length) {
+    templateSelect.append(new Option('No templates detected', ''));
     templateSelect.disabled = true;
+    updateTemplatePreview('');
     return;
   }
 
-  TEMPLATE_FILES.forEach((file) => {
-    templateSelect.append(new Option(file, file));
+  templateSelect.disabled = false;
+
+  files.forEach((file) => {
+    templateSelect.append(new Option(templateNameFromFile(file), file));
   });
+
+  updateTemplatePreview(files[0]);
+  setTemplate(files[0]);
+}
+
+function updateTemplatePreview(file) {
+  if (!file) {
+    templatePreview.removeAttribute('src');
+    templatePreviewFrame.classList.remove('has-template');
+    templatePreviewText.textContent = 'No border selected';
+    return;
+  }
+
+  templatePreview.src = `${TEMPLATE_DIR}${file}`;
+  templatePreview.alt = `${file} border preview`;
+  templatePreviewText.textContent = templateNameFromFile(file);
+  templatePreviewFrame.classList.add('has-template');
 }
 
 function drawPlaceholder() {
@@ -107,10 +152,12 @@ function syncInputs() {
 async function setTemplate(file) {
   if (!file) {
     state.template = null;
+    updateTemplatePreview('');
     render();
     return;
   }
 
+  updateTemplatePreview(file);
   state.template = await loadImage(`${TEMPLATE_DIR}${file}`);
   render();
 }
@@ -179,5 +226,15 @@ downloadBtn.addEventListener('click', () => {
   link.click();
 });
 
-populateTemplates();
-render();
+async function init() {
+  try {
+    const files = await discoverTemplates();
+    populateTemplates(files);
+  } catch (error) {
+    populateTemplates([]);
+  }
+
+  render();
+}
+
+init();
