@@ -1,4 +1,5 @@
 const TEMPLATE_DIR = 'assets/img/imgtemplate/';
+const TEMPLATE_MANIFEST = `${TEMPLATE_DIR}templates.json`;
 const TEMPLATE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp'];
 
 const canvas = document.querySelector('#previewCanvas');
@@ -45,7 +46,20 @@ function normalizeTemplateFile(href) {
   return filename;
 }
 
-async function discoverTemplates() {
+async function discoverTemplatesFromManifest() {
+  const response = await fetch(TEMPLATE_MANIFEST, { cache: 'no-store' });
+  if (!response.ok) return [];
+
+  const files = await response.json();
+  if (!Array.isArray(files)) return [];
+
+  return files
+    .filter((file) => typeof file === 'string')
+    .filter((file) => TEMPLATE_EXTENSIONS.some((extension) => file.toLowerCase().endsWith(extension)))
+    .sort((a, b) => a.localeCompare(b));
+}
+
+async function discoverTemplatesFromDirectory() {
   const response = await fetch(TEMPLATE_DIR);
   if (!response.ok) return [];
 
@@ -56,6 +70,13 @@ async function discoverTemplates() {
     .filter((file) => TEMPLATE_EXTENSIONS.some((extension) => file.toLowerCase().endsWith(extension)));
 
   return [...new Set(files)].sort((a, b) => a.localeCompare(b));
+}
+
+async function discoverTemplates() {
+  const manifestFiles = await discoverTemplatesFromManifest();
+  if (manifestFiles.length) return manifestFiles;
+
+  return discoverTemplatesFromDirectory();
 }
 
 function populateTemplates(files) {
