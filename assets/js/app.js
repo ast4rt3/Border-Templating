@@ -5,10 +5,12 @@ const TEMPLATE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp'];
 const canvas = document.querySelector('#previewCanvas');
 const ctx = canvas.getContext('2d');
 const photoInput = document.querySelector('#photoInput');
+const photoStatus = document.querySelector('#photoStatus');
 const templateSelect = document.querySelector('#templateSelect');
 const templatePreviewFrame = document.querySelector('.template-preview');
 const templatePreview = document.querySelector('#templatePreview');
 const templatePreviewText = document.querySelector('#templatePreviewText');
+const templateLabel = document.querySelector('#templateLabel');
 const zoomRange = document.querySelector('#zoomRange');
 const xOffset = document.querySelector('#xOffset');
 const yOffset = document.querySelector('#yOffset');
@@ -86,6 +88,7 @@ function populateTemplates(files) {
     templateSelect.append(new Option('No templates detected', ''));
     templateSelect.disabled = true;
     updateTemplatePreview('');
+    templateLabel.textContent = 'No template detected';
     return;
   }
 
@@ -104,24 +107,28 @@ function updateTemplatePreview(file) {
     templatePreview.removeAttribute('src');
     templatePreviewFrame.classList.remove('has-template');
     templatePreviewText.textContent = 'No border selected';
+    templateLabel.textContent = 'No template selected';
     return;
   }
 
   templatePreview.src = `${TEMPLATE_DIR}${file}`;
   templatePreview.alt = `${file} border preview`;
   templatePreviewText.textContent = templateNameFromFile(file);
+  templateLabel.textContent = templateNameFromFile(file);
   templatePreviewFrame.classList.add('has-template');
 }
 
 function drawPlaceholder() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#f8faf7';
+  ctx.fillStyle = '#f8fafc';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#637065';
+  ctx.fillStyle = '#667085';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.font = '700 34px Arial, sans-serif';
-  ctx.fillText('Upload a photo and choose a border', canvas.width / 2, canvas.height / 2);
+  ctx.fillText('NBSC SAS Border Templating System', canvas.width / 2, canvas.height / 2 - 22);
+  ctx.font = '700 24px Arial, sans-serif';
+  ctx.fillText('Upload a photo to begin', canvas.width / 2, canvas.height / 2 + 28);
 }
 
 function imageRect(mode = 'contain') {
@@ -209,6 +216,7 @@ photoInput.addEventListener('change', async (event) => {
   const objectUrl = URL.createObjectURL(file);
   state.photo = await loadImage(objectUrl);
   URL.revokeObjectURL(objectUrl);
+  photoStatus.textContent = file.name;
   fitPhoto('cover');
 });
 

@@ -3,24 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Border Templating</title>
+  <title>NBSC SAS Border Templating System</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
   <main class="app-shell">
     <section class="workspace" aria-label="Template composer">
       <header class="topbar">
-        <div>
-          <p class="eyebrow">Border Templating</p>
-          <h1>Create framed campaign photos</h1>
+        <div class="brand-lockup">
+          <span class="brand-mark">NB</span>
+          <div>
+            <p class="eyebrow">Campaign Photo Composer</p>
+            <h1>NBSC SAS Border Templating System</h1>
+          </div>
         </div>
         <button class="primary-action" id="downloadBtn" type="button" disabled>Download PNG</button>
       </header>
 
       <div class="composer">
         <aside class="controls" aria-label="Editor controls">
+          <div class="panel-heading">
+            <h2>Editor</h2>
+            <span>1080 x 1080</span>
+          </div>
+
           <label class="upload-card">
-            <span>Upload photo</span>
+            <span class="upload-title">Upload photo</span>
+            <span class="upload-status" id="photoStatus">No photo selected</span>
             <input id="photoInput" type="file" accept="image/*">
           </label>
 
@@ -31,7 +40,7 @@
             </select>
           </div>
 
-          <figure class="template-preview">
+          <figure class="template-preview" aria-label="Selected template preview">
             <div class="template-preview-box">
               <img id="templatePreview" alt="Selected border preview">
               <span id="templatePreviewText">No border selected</span>
@@ -63,7 +72,16 @@
         </aside>
 
         <section class="preview-panel" aria-label="Preview">
-          <canvas id="previewCanvas" width="1080" height="1080"></canvas>
+          <div class="preview-header">
+            <div>
+              <h2>Preview</h2>
+              <span id="templateLabel">Template pending</span>
+            </div>
+            <span class="format-pill">PNG</span>
+          </div>
+          <div class="canvas-stage">
+            <canvas id="previewCanvas" width="1080" height="1080"></canvas>
+          </div>
         </section>
       </div>
     </section>
